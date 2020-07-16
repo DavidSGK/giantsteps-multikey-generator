@@ -5,6 +5,9 @@ Generates 5 variations of each audio track in the data set, with at most 2 pitch
 
 These parameters can be changed easily. See `generator.py` for more details.
 
+# Prerequisites
+You should only need a local Docker installation. Generating all the tracks (~3000) based on the default parameters can take a long time, which might be on the order of 12 hours.
+
 # Usage
 Download the audio files using the script provided by GiantSteps. It will take a while as it is ~850MB.
 ```
