@@ -1,15 +1,34 @@
+import json
 import os
 import random
 from typing import Callable
 
 import sox
 
+from key import Key
+
 MIN_INTERVAL = 5.
 MAX_LENGTH = 120.
 MIN_SHIFT = -11
 MAX_SHIFT = 11
 
-def generate(input_file: str, output_path: str, n_gen: int = 5):
+class MissingAnnotationError(Exception):
+  pass
+
+def original_key(in_file: str, annotations_path: str) -> Key:
+  try:
+    f_name = os.path.basename(in_file)
+    annotation_f_name = '.'.join(f_name.split('.')[:-1] + ['key'])
+    annotation_path = os.path.join(annotations_path, annotation_f_name)
+
+    with open(annotation_path, 'r') as a:
+      return Key.parse(a.readline().strip())
+  except FileNotFoundError as e:
+    raise MissingAnnotationError(e)
+
+def generate(in_file: str, ann_in_path: str, out_path: str, ann_out_path: str, n_gen: int = 5):
+  key = original_key(in_file, ann_in_path)
+
   for i in range(n_gen):
     tfm = sox.Transformer()
 
@@ -29,13 +48,19 @@ def generate(input_file: str, output_path: str, n_gen: int = 5):
     else:
       tfm.pitch(shifts[0])
 
-    f_name = os.path.basename(input_file)
+    f_name = os.path.basename(in_file)
     f_segs = f_name.split('.')
     f_segs[0] += f'-{i}'
     out_name = '.'.join(f_segs)
 
-    yield(f'{f_name} gen {i} with {n_keys} keys at {[round(x, 2) for x in starts]} by {shifts} start')
+    yield(f'{f_name} gen {i} with {n_keys} keys at {[round(x, 2) for x in starts]} by {shifts} from {key} start')
 
-    tfm.build(input_file, os.path.join(output_path, out_name))
+    tfm.build(in_file, os.path.join(out_path, out_name))
+
+    ann_out_name = '.'.join(f_segs[:-1] + ['json'])
+    serialized_keys = [{ 'start': round(starts[j], 2), 'key': str(key.shift(shifts[j])) } for j in range(n_keys)]
+
+    with open(os.path.join(ann_out_path, ann_out_name), 'w') as a:
+      json.dump(serialized_keys, a)
 
     yield(f'{f_name} gen {i} done')
