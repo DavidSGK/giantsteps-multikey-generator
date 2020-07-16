@@ -27,7 +27,11 @@ def original_key(in_file: str, annotations_path: str) -> Key:
     raise MissingAnnotationError(e)
 
 def generate(in_file: str, ann_in_path: str, out_path: str, ann_out_path: str, n_gen: int = 5):
-  key = original_key(in_file, ann_in_path)
+  try:
+    key = original_key(in_file, ann_in_path)
+  except MissingAnnotationError as e:
+    yield(f'Missing annotation for {in_file}. Skipping.')
+    return
 
   for i in range(n_gen):
     tfm = sox.Transformer()
