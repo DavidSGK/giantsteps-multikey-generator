@@ -6,4 +6,6 @@ RUN pip install sox tqdm
 WORKDIR /usr/src/app
 
 COPY giantsteps-key-dataset/annotations/key/ annotations/
+COPY *.py ./
 
+CMD ["python", "main.py", "./audio/", "./annotations/", "./generated/", "./generated/annotations/"]
