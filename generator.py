@@ -9,8 +9,8 @@ from key import Key
 
 MIN_INTERVAL = 5.
 MAX_LENGTH = 120.
-MIN_SHIFT = -11
-MAX_SHIFT = 11
+MIN_SHIFT = -5
+MAX_SHIFT = 5
 
 class MissingAnnotationError(Exception):
   pass
@@ -62,7 +62,12 @@ def generate(in_file: str, ann_in_path: str, out_path: str, ann_out_path: str, n
     tfm.build(in_file, os.path.join(out_path, out_name))
 
     ann_out_name = '.'.join(f_segs[:-1] + ['json'])
-    serialized_keys = [{ 'start': round(starts[j], 2), 'key': str(key.shift(shifts[j])) } for j in range(n_keys)]
+    serialized_keys = []
+    last_key = key
+    for j in range(n_keys):
+      shifted = last_key.shift(shifts[j])
+      serialized_keys.append({ 'start': round(starts[j], 2), 'key': str(shifted) })
+      last_key = shifted
 
     with open(os.path.join(ann_out_path, ann_out_name), 'w') as a:
       json.dump(serialized_keys, a)

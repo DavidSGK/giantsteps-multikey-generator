@@ -2,6 +2,8 @@ __pycache__/
 .vscode/
 .devcontainer/
 audio/
+data/
 generated/
 
 *.mp3
+*.zip

@@ -8,4 +8,4 @@ WORKDIR /usr/src/app
 COPY giantsteps-key-dataset/annotations/key/ annotations/
 COPY *.py ./
 
-CMD ["python", "main.py", "./audio/", "./annotations/", "./generated/", "./generated/annotations/"]
+CMD ["python", "main.py", "./audio/", "./annotations/", "0", "./generated/", "./generated/annotations/", "5"]

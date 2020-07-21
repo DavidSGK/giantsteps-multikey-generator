@@ -1,0 +1,6 @@
+.git
+__pycache__
+data
+generated
+giantsteps-key-dataset/audio
+**/*.zip
